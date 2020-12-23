@@ -3,7 +3,7 @@ const needle = require('needle');
 // The code below sets the bearer token from your environment variables
 // To set environment variables on Mac OS X, run the export command below from the terminal:
 // export BEARER_TOKEN='YOUR-TOKEN'
-const TOKEN = process.env.BEARER_TOKEN;
+const TOKEN = require('./token');
 
 const rulesURL = 'https://api.twitter.com/2/tweets/search/stream/rules'
 const streamURL = 'https://api.twitter.com/2/tweets/search/stream?tweet.fields=public_metrics&expansions=author_id';

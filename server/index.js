@@ -1,6 +1,20 @@
+const http = require('http');
+const path = require('path');
+const express = require('express');
+const socketIo = require('socket.io');
 const needle = require('needle');
 const config = require('dotenv').config();
 const TOKEN = process.env.TWITTER_BEARER_TOKEN;
+const PORT = process.env.PORT || 3000;
+
+const app = express();
+
+const server = http.createServer(app);
+const io = socketIo(server);
+
+app.get('/', (req, res) => {
+    res.sendFile(path.resolve(__dirname, '../', 'client', 'index.html'));
+});
 
 console.log(TOKEN);
 
@@ -125,7 +139,16 @@ function streamTweets() {
     })
 }
 
+io.on('connection', () => {
+    console.log('Client connected');
+})
 
+server.listen(PORT, () => {
+    console.log('Listening');
+});
+
+
+/*
 (async () => {
     let currentRules;
 
@@ -150,4 +173,4 @@ function streamTweets() {
         streamConnect(TOKEN);
     })
 
-})();
+})();*/

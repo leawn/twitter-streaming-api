@@ -22,7 +22,7 @@ const rulesURL = 'https://api.twitter.com/2/tweets/search/stream/rules'
 const streamURL = 'https://api.twitter.com/2/tweets/search/stream?tweet.fields=public_metrics&expansions=author_id';
 
 const rules = [
-    { 'value': 'giveaway' }
+    { 'value': 'navalny' }
 ];
 
 async function getRules() {
@@ -124,7 +124,7 @@ function streamConnect() {
 
 }
 
-function streamTweets() {
+function streamTweets(socket) {
     const stream = needle.get(streamURL, {
         headers: {
             'Authorization': `Bearer ${TOKEN}`
@@ -134,7 +134,7 @@ function streamTweets() {
     stream.on('data', (data) => {
         try {
             const json = JSON.parse(data);
-            console.log(json);
+            socket.emit('tweet', json);
         } catch (error) {}
     })
 }
@@ -143,8 +143,20 @@ io.on('connection', () => {
     console.log('Client connected');
 })
 
-server.listen(PORT, () => {
+server.listen(PORT, async () => {
     console.log('Listening');
+    let currentRules;
+
+    try {
+        currentRules = await getRules();
+        await deleteRules(currentRules);
+        await setRules();
+
+    } catch (e) {
+        console.error(e);
+        process.exit(1);
+    }
+    streamTweets(io);
 });
 
 
